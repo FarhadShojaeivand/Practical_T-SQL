@@ -25,11 +25,13 @@ select client_id , count(*) from Employee
 group by(client_id)
 
 -- Delete duplicate entries from the table for employees who were hired later
-with Employee_duplicate as (
-select id , client_id , row_number() over( partition by client_id order by join_date) as order_number from Employee) 
-
-delete from Employee
-where id in ( select id from Employee_duplicate where order_number > 1) 
+WITH MyCTE AS (
+    SELECT 
+        ID,client_id , 
+        ROW_NUMBER() OVER (PARTITION BY client_id ORDER BY Join_Date) AS RowNum
+    FROM Employee
+)
+DELETE FROM MyCTE WHERE RowNum > 1;
 
 select * from Employee
 
